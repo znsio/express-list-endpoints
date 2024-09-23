@@ -654,4 +654,24 @@ for (const { version, express } of expressVersions) {
       })
     })
   })
+
+  mocha.describe("should properly list routes from subRouter when mounted at root", () => {
+    before(() => {
+      const app = express()
+      const router = express.Router()
+
+      router.get('/foo/bar', (req, res) => {
+        res.end()
+      })
+
+      app.use('/', router);
+      endpoints = listEndpoints(app)
+    })
+
+    it('should list routes correctly', () => {
+      expect(endpoints).to.have.length(1)
+      expect(endpoints[0].path).to.be.equal('/foo/bar')
+      expect(endpoints[0].methods[0]).to.be.equal('GET')
+    })
+  })
 }

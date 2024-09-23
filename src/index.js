@@ -72,9 +72,8 @@ const parseExpressRoute = function (route, basePath) {
 
   /** @type {Endpoint[]} */
   const endpoints = paths.map((path) => {
-    const completePath = basePath && path === '/'
-      ? basePath
-      : `${basePath}${path}`
+    const completePath = basePath && path === '/' ? basePath
+      : path && basePath === "/" ? path : `${basePath}${path}`
 
     /** @type {Endpoint} */
     const endpoint = {
