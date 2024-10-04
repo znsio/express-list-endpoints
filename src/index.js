@@ -57,6 +57,17 @@ const hasParams = function (expressPathRegExp) {
 }
 
 /**
+ * Combine base and path into a single path. Squashes multiple slashes and
+ * removes trailing slash (except root "/")
+ * @param {string} base The base path
+ * @param {string} path The path to combine with the base
+ * @returns {string} The combined path
+ */
+function combinePaths(base, path) {
+  return (base + path).replace(/\/+/g, "/").replace(/\/$/, "") || "/";
+}
+
+/**
  * @param {Route} route Express route object to be parsed
  * @param {string} basePath The basePath the route is on
  * @return {Endpoint[]} Endpoints info
@@ -72,8 +83,7 @@ const parseExpressRoute = function (route, basePath) {
 
   /** @type {Endpoint[]} */
   const endpoints = paths.map((path) => {
-    const completePath = basePath && path === '/' ? basePath
-      : path && basePath === "/" ? path : `${basePath}${path}`
+    const completePath = combinePaths(basePath, path);
 
     /** @type {Endpoint} */
     const endpoint = {

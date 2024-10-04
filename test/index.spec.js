@@ -673,5 +673,39 @@ for (const { version, express } of expressVersions) {
         expect(endpoints[0].methods[0]).to.be.equal('GET')
       })
     })
-  })
+
+    describe("should accurately list routes from both the main, router and its sub-router at root level", () => {
+      before(() => {
+        const app = express()
+        const router = express.Router()
+        const router2 = express.Router()
+
+        app.delete('/foo/bar', (req, res) => {
+          res.end()
+        })
+  
+        router.get('/foo', (req, res) => {
+          res.end()
+        })
+
+        router2.post('/bar', (req, res) => {
+          res.end()
+        })
+        
+        router.use('/', router2);
+        app.use(router);
+        endpoints = listEndpoints(app)
+      })
+  
+      it('should list routes correctly', () => {
+        expect(endpoints).to.have.length(3)
+        expect(endpoints[0].path).to.be.equal('/foo/bar')
+        expect(endpoints[0].methods[0]).to.be.equal('DELETE')
+        expect(endpoints[1].path).to.be.equal('/foo')
+        expect(endpoints[1].methods[0]).to.be.equal('GET')
+        expect(endpoints[2].path).to.be.equal('/bar')
+        expect(endpoints[2].methods[0]).to.be.equal('POST')
+      })
+    })
+  })  
 }
